@@ -1,7 +1,7 @@
 "use client";
 import { useAuthContext } from "@/global/auth/hooks/useAuth";
 
-export default function WithAdmin<P extends Object>(
+export default function WithAdmin<P extends object>(
   Component: React.ComponentType<P & { isAdmin: boolean }>
 ) {
   return function WithAdminComponent(props: any) {

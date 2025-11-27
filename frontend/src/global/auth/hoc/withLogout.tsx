@@ -3,7 +3,7 @@
 import { useAuthContext } from "@/global/auth/hooks/useAuth";
 import { MemberDto } from "@/type/member";
 
-export default function WithLogout<P extends Object>(
+export default function WithLogout<P extends object>(
   Component: React.ComponentType<P & { loginMember: MemberDto }>
 ) {
   return function WithLogoutComponent(props: any) {
