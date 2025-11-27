@@ -1,6 +1,7 @@
 package com.back.global.rq
 
 import com.back.domain.member.member.entity.Member
+import com.back.global.appConfig.SiteProperties
 import com.back.global.exception.ServiceException
 import com.back.global.security.SecurityUser
 import jakarta.servlet.http.Cookie
@@ -12,7 +13,8 @@ import org.springframework.stereotype.Component
 @Component
 class Rq(
     private val request: HttpServletRequest,
-    private val response: HttpServletResponse
+    private val response: HttpServletResponse,
+    private val siteProperties: SiteProperties
 ) {
 
     val actor: Member
@@ -47,7 +49,7 @@ class Rq(
             .apply {
                 path = "/"
                 isHttpOnly = true
-                domain = "localhost"
+                domain = siteProperties.domain
                 secure = true
                 setAttribute("SameSite", "Strict")
 

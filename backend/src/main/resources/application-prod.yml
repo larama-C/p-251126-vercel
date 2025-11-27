@@ -13,6 +13,7 @@ spring:
         format_sql: false
         highlight_sql: false
         use_sql_comments: false
+    show-sql: false
 
 logging:
   level:
