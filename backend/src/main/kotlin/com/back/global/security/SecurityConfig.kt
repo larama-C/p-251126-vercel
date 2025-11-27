@@ -28,18 +28,31 @@ class SecurityConfig(
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
 
         http {
+            // CORS 활성화
+            cors { }
+
             authorizeHttpRequests {
                 authorize("/favicon.ico", permitAll)
                 authorize("/h2-console/**", permitAll)
+
+                // Posts GET
                 authorize(HttpMethod.GET, "/api/*/posts", permitAll)
                 authorize(HttpMethod.GET, "/api/*/posts/{id:\\d+}", permitAll)
                 authorize(HttpMethod.GET, "/api/*/posts/{postId:\\d+}/comments", permitAll)
                 authorize(HttpMethod.GET, "/api/*/posts/{postId:\\d+}/comments/{commentId:\\d+}", permitAll)
+
+                // Member API
                 authorize(HttpMethod.POST, "/api/v1/members/login", permitAll)
                 authorize(HttpMethod.POST, "/api/v1/members/join", permitAll)
                 authorize(HttpMethod.DELETE, "/api/v1/members/logout", permitAll)
+
+                // Admin
                 authorize("/api/*/adm/**", hasRole("ADMIN"))
+
+                // Normal API
                 authorize("/api/*/**", authenticated)
+
+                // Swagger, static files 등 허용
                 authorize(anyRequest, permitAll)
             }
 
@@ -50,6 +63,7 @@ class SecurityConfig(
             }
 
             addFilterBefore<UsernamePasswordAuthenticationFilter>(customAuthenticationFilter)
+
             sessionManagement {
                 sessionCreationPolicy = SessionCreationPolicy.STATELESS
             }
@@ -61,31 +75,30 @@ class SecurityConfig(
                 }
             }
 
+            // 인증/인가 실패 응답 설정
             exceptionHandling {
                 authenticationEntryPoint = AuthenticationEntryPoint { _, response, _ ->
-                    response.contentType =
-                        "application/json; charset=UTF-8"
+                    response.contentType = "application/json; charset=UTF-8"
                     response.status = 401
                     response.writer.write(
                         """
-                            {
-                                "resultCode": "401-1",
-                                "msg": "로그인 후 이용해주세요."
-                            }
-                            """.trimIndent()
+                        {
+                            "resultCode": "401-1",
+                            "msg": "로그인 후 이용해주세요."
+                        }
+                        """.trimIndent()
                     )
                 }
 
                 accessDeniedHandler = AccessDeniedHandler { _, response, _ ->
-                    response.contentType =
-                        "application/json; charset=UTF-8"
+                    response.contentType = "application/json; charset=UTF-8"
                     response.status = 403
                     response.writer.write(
                         """
-                            {
-                                "resultCode": "403-1",
-                                "msg": "권한이 없습니다."
-                            }
+                        {
+                            "resultCode": "403-1",
+                            "msg": "권한이 없습니다."
+                        }
                         """.trimIndent()
                     )
                 }
@@ -95,18 +108,22 @@ class SecurityConfig(
         return http.build()
     }
 
+    // 🔥 전역 CORS 설정
     @Bean
     fun corsConfigurationSource(): UrlBasedCorsConfigurationSource {
         val configuration = CorsConfiguration().apply {
-            allowedOrigins =
-                listOf("https://cdpn.io", siteProperties.frontUrl)
-            allowedMethods =
-                listOf("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
+            // 🔥 frontend URL (반드시 https)
+            allowedOrigins = listOf(
+                siteProperties.frontUrl,           // https://fe.larama.site
+                "https://api.larama.site"          // Swagger UI가 사용하는 도메인
+            )
+            allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
             allowedHeaders = listOf("*")
             allowCredentials = true
         }
 
         return UrlBasedCorsConfigurationSource().apply {
+            // 🔥 모든 API 요청에 대해 CORS 적용
             registerCorsConfiguration("/api/**", configuration)
         }
     }
