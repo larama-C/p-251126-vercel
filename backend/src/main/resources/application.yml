@@ -25,10 +25,6 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-  mvc:
-    hiddenmethod:
-      filter:
-        enabled: true
 
   security:
     oauth2:
@@ -60,6 +56,21 @@ logging:
     com.rest1: DEBUG
 
 custom:
+  dev:
+    domain: localhost
+    backUrl: "http://${custom.dev.domain}:${server.port}"
+    frontUrl: "http://${custom.dev.domain}:3000"
+
+  prod:
+    domain: p-14626.qwas.shop
+    backUrl: "https://api.${custom.prod.domain}"
+    frontUrl: "https://www.${custom.prod.domain}"
+
+  site:
+    domain: "${custom.dev.domain}"
+    backUrl: "${custom.dev.backUrl}"
+    frontUrl: "${custom.dev.frontUrl}"
+
   jwt:
     expireSeconds: "#{30 * 60}"
     secretPattern: ${CUSTOM_JWT_SECRET_PATTERN}
