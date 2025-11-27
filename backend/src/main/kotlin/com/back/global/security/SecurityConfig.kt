@@ -108,14 +108,15 @@ class SecurityConfig(
         return http.build()
     }
 
-    // 🔥 전역 CORS 설정
+    // 전역 CORS 설정
     @Bean
     fun corsConfigurationSource(): UrlBasedCorsConfigurationSource {
         val configuration = CorsConfiguration().apply {
-            // 🔥 frontend URL (반드시 https)
+            // frontend URL (반드시 https)
             allowedOrigins = listOf(
-                siteProperties.frontUrl,           // https://fe.larama.site
-                "https://api.larama.site"          // Swagger UI가 사용하는 도메인
+                siteProperties.frontUrl,
+                "https://api.larama.site",
+                "https://fe.larama.site"
             )
             allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
             allowedHeaders = listOf("*")
@@ -123,7 +124,7 @@ class SecurityConfig(
         }
 
         return UrlBasedCorsConfigurationSource().apply {
-            // 🔥 모든 API 요청에 대해 CORS 적용
+            // 모든 API 요청에 대해 CORS 적용
             registerCorsConfiguration("/api/**", configuration)
         }
     }
