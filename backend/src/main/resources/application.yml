@@ -63,7 +63,7 @@ custom:
     frontUrl: "http://${custom.dev.domain}:3000"
 
   prod:
-    domain: api.larama.site
+    domain: larama.site
     backUrl: "https://api.${custom.prod.domain}"
     frontUrl: "https://www.${custom.prod.domain}"
 
